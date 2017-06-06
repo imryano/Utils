@@ -9,3 +9,6 @@ Some of this is "reinventing the wheel", but it's all practice.
 
 ## Webservices
 *Used for connecting to, using and testing web services. Only used for testing at this point, but will be expanded.*
+
+## Password
+*Password handling. Mainly for ease of use, will likely get pushed into the User functions*
