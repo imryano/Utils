@@ -1,29 +1,31 @@
 package webservice
 
 import (
-	"bytes"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
-	"strings"
 )
 
-func RunWebServiceTest(req *http.Request, object interface{}, address string, function func(http.ResponseWriter, *http.Request)) string {
-	if address != "" {
-		req.RemoteAddr = address
-	}
+type webService struct {
+	Name    string
+	Address string
+}
 
-	b := new(bytes.Buffer)
-	err := json.NewEncoder(b).Encode(object)
+var webServiceAddresses = []webService{
+	webService{Name: "UserRead", Address: "localhost:8080"},
+	webService{Name: "UserWrite", Address: "localhost:8081"},
+}
 
-	if err == nil {
-		req.Body = ioutil.NopCloser(b)
-
-		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(function)
-		handler.ServeHTTP(rr, req)
-		return strings.TrimSpace(rr.Body.String())
+func GetServiceAddress(serviceName string) string {
+	for _, w := range webServiceAddresses {
+		if w.Name == serviceName {
+			return w.Address
+		}
 	}
 	return ""
+}
+
+func SetCORSProps(w http.ResponseWriter, origin string) http.ResponseWriter {
+	w.Header().Set("Access-Control-Allow-Origin", origin)
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	return w
 }
